@@ -54,11 +54,42 @@ def filter_contours(contours, min):
     cont_df = pd.DataFrame(data)
     avg_contour = statistics.mean(cont_area)
 
-    cont_df_filtered = cont_df[cont_df["Area"] > (avg_contour*min)]
+    filtered_conatours_df = cont_df[cont_df["Area"] > (avg_contour*min)]
 
-    print(cont_df_filtered)
+    filtd_contours = filtered_conatours_df["Contour"].to_list()
+    total_smarties = len(filtd_contours)
 
-    return cont_df_filtered
+    return filtd_contours, filtered_conatours_df
+
+def s_color_counter(smty_df, img):
+
+    # 1) find the centroid of each smartie
+    cont = smty_df["Contour"].to_list()
+    centroid = []
+    for i in cont:
+        x_val = []
+        y_val = []
+        for j in i:
+            x_val.append(j[0][0])
+            y_val.append(j[0][1])
+        centroid.append([statistics.mean(x_val), statistics.mean(y_val)])
+
+
+    centroid_contours = []
+    for i in centroid:
+        # this specific format is requied for the drawContours function
+        centroid_contours.append(np.array([i]))
+
+    # centroid_np_array = np.array([centroid_contours])
+    # print(centroid_np_array)
+
+
+    smty_df["Centroid"] = centroid
+    # print(smty_df)
+
+    cv.drawContours(img, centroid_contours, -1, (255,250,250), 12)
+    plt.imshow(img)
+    plt.show()
 
 
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
@@ -66,6 +97,7 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
     # 1) Load up the image file
     og_img_file_loc = get_dir_path("Smarties.jpg")
     og_img = cv.imread(og_img_file_loc) # BGR
+    og_img1 = cv.imread(og_img_file_loc) # BGR (extra image for later use)
 
     # 2) convert to HSV
     hsv_img = cv.cvtColor(og_img, cv.COLOR_RGB2HSV)
@@ -93,13 +125,16 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     # 6) Filter out all the small contours (these are usually errors)
 
-    filtd_contours_df = filter_contours(contours, MIN_CONT_THRESHOLD)
-
-    filtd_contours = filtd_contours_df["Contour"].to_list()
-
+    filtd_contours, filtered_conatours_df = filter_contours(contours, MIN_CONT_THRESHOLD)
+    # print(filtd_contours)
     cv.drawContours(og_img, filtd_contours, -1, (255,255,240), 2)
-    plt.imshow(og_img)
-    plt.show()
+    # plt.imshow(og_img)
+    # plt.show()
+
+    # 7) count the number of different smartie colors:
+
+    smatie_colors = s_color_counter(filtered_conatours_df, og_img)
+
 
 
 
