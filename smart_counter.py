@@ -74,22 +74,27 @@ def s_color_counter(smty_df, img):
             y_val.append(j[0][1])
         centroid.append([statistics.mean(x_val), statistics.mean(y_val)])
 
-
     centroid_contours = []
     for i in centroid:
         # this specific format is requied for the drawContours function
         centroid_contours.append(np.array([i]))
 
-    # centroid_np_array = np.array([centroid_contours])
-    # print(centroid_np_array)
-
-
     smty_df["Centroid"] = centroid
-    # print(smty_df)
+
+    # s_color_val = []
+    # for i in centroid:
+    #     s_color_val.append(img[i])
+
+    # print(s_color_val)
+
 
     cv.drawContours(img, centroid_contours, -1, (255,250,250), 12)
     plt.imshow(img)
     plt.show()
+
+
+
+
 
 
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
