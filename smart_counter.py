@@ -100,30 +100,30 @@ def s_color_counter(smty_df, img):
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     # 1) Load up the image file
-    og_img_file_loc = get_dir_path("Smarties.jpg")
+    og_img_file_loc = get_dir_path("Smartie_Dark_1.JPG")
     og_img = cv.imread(og_img_file_loc) # BGR
     og_img1 = cv.imread(og_img_file_loc) # BGR (extra image for later use)
 
     # 2) convert to HSV
-    hsv_img = cv.cvtColor(og_img, cv.COLOR_RGB2HSV)
+    hsv_img = cv.cvtColor(og_img, cv.COLOR_RGB2GRAY)
     # plt.imshow(hsv_img)
     # plt.show()
 
     # 3) Add blur to image
     blur_img = cv.GaussianBlur(hsv_img, (blr_amt, blr_amt), cv.BORDER_DEFAULT)
-    # plt.imshow(blur_img, cmap='gray')
-    # plt.show()
+    plt.imshow(blur_img, cmap='gray')
+    plt.show()
 
     # 4) Find the edges using canny
     canny_img = cv.Canny(blur_img, minVal, maxVal)
-    # plt.imshow(canny_img, cmap='gray')
+    # plt.imshow(canny_img)
     # plt.show()
 
     kernel = np.ones((dilate_size, dilate_size))
 
     dilate_img = cv.dilate(canny_img, kernel, iterations=1)
-    # plt.imshow(dilate_img, cmap='gray')
-    # plt.show()
+    plt.imshow(dilate_img, cmap='gray')
+    plt.show()
 
     # 5) Find the contours in the image
     contours, heirarchy = cv.findContours(dilate_img, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
@@ -132,7 +132,7 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     filtd_contours, filtered_conatours_df = filter_contours(contours, MIN_CONT_THRESHOLD)
     # print(filtd_contours)
-    cv.drawContours(og_img, filtd_contours, -1, (255,255,240), 2)
+    cv.drawContours(og_img, filtd_contours, -1, (0,0,0), 2)
     # plt.imshow(og_img)
     # plt.show()
 
