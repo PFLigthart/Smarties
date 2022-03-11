@@ -107,7 +107,8 @@ def s_color_counter(smty_df, img):
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     # 1) Load up the image file
-    og_img_file_loc = get_dir_path("White_1.JPG")
+    og_img_file_loc = get_dir_path("Red_15.JPG")
+
     # og_img_file_loc = get_dir_path("Smarties.jpg")
     # og_img_file_loc = get_dir_path("Smartie_Dark_2.JPG")
     og_img = cv.imread(og_img_file_loc) # BGR
