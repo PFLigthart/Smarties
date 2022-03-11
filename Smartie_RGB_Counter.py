@@ -21,6 +21,7 @@ def get_dir_path(target_filename):
     return config_path
 
 def get_settings():
+    """ extracts settings from the configuration file """
 
     # create settings object from config file
     settings_obj = configparser.ConfigParser()
@@ -78,6 +79,9 @@ def _filter_contours(contours, min):
     return filtd_contours
 
 def find_single_color_contour(img, minVal, maxVal, dilate_size, cont_thresh):
+
+    """ Finds the contours in an image .incl filtering"""
+
         # Find the edges using canny
         canny_img = cv.Canny(img, minVal, maxVal)
         # plt.imshow(canny_img, cmap='gray')
@@ -136,6 +140,8 @@ def Count_a_color(clr, img, Colors_List, blr_amt, minVal, maxVal, dilate_size, c
 
 def main(Colors_List, blr_amt, minVal, maxVal, dilate_size, cont_thresh):
 
+    """ Main function that runs the over all code"""
+
     # 1) Load up the image file
     # opencv uses BGR when it imports images
     og_img_file_loc = get_dir_path("Final_img.JPG")
@@ -147,7 +153,6 @@ def main(Colors_List, blr_amt, minVal, maxVal, dilate_size, cont_thresh):
     blue_smarties  = Count_a_color('blue', og_img, Colors_List, blr_amt, minVal, maxVal, dilate_size, cont_thresh)
     green_smarties = Count_a_color('green', og_img, Colors_List, blr_amt, minVal, maxVal, dilate_size, cont_thresh)
 
-    print(blue_smarties)
 
 
 if __name__ == '__main__':
