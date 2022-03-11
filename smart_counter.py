@@ -26,13 +26,29 @@ def get_settings():
     settings_obj = configparser.ConfigParser()
     settings_obj.read(get_dir_path("smartie_config.ini"))
     Settings = settings_obj["Settings"]
+    Color_Settings = settings_obj["Color_Settings"]
     BLUR = int(Settings["BLUR"])
     minVal = int(Settings["MINVAL"])
     maxVal = int(Settings["MAXVAL"])
     DILATE_SIZE = int(Settings["DILATE_SIZE"])
     MIN_CONT_THRESHOLD = float(Settings["MIN_CONT_THRESHOLD"])
 
-    return BLUR, minVal, maxVal, DILATE_SIZE, MIN_CONT_THRESHOLD
+    return BLUR, minVal, maxVal, DILATE_SIZE, MIN_CONT_THRESHOLD, Color_Settings
+
+def color_limits(C_S):
+
+    """ The upper and lower bounds of the color limits are set in the config
+        file, howerver these are stored as a string and need to be converted
+        to an array to be used by the program, this is done in this function
+    """
+    RED_U = np.array([int(C_S["RBU"]), int(C_S["RGU"]), int(C_S["RRU"])])
+    RED_L = np.array([int(C_S["RBL"]), int(C_S["RGL"]), int(C_S["RRL"])])
+    BLUE_U = np.array([int(C_S["BBU"]), int(C_S["BGU"]), int(C_S["BRU"])])
+    BLUE_L = np.array([int(C_S["BBL"]), int(C_S["BGL"]), int(C_S["BRL"])])
+    GREEN_U = np.array([int(C_S["GBU"]), int(C_S["GGU"]), int(C_S["GRU"])])
+    GREEN_L = np.array([int(C_S["GBL"]), int(C_S["GGL"]), int(C_S["GRL"])])
+
+    return RED_L, RED_U, GREEN_L, GREEN_U, BLUE_L, BLUE_U
 
 def filter_contours(contours, min):
     """ Filtering of the contours - to remove the small contours which are
@@ -103,10 +119,10 @@ def s_color_counter(smty_df, img):
     plt.imshow(img)
     plt.show()
 
-
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     # 1) Load up the image file
+    # opencv uses BGR when it imports images
     og_img_file_loc = get_dir_path("Red_15.JPG")
 
     # og_img_file_loc = get_dir_path("Smarties.jpg")
@@ -115,9 +131,9 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
     og_img1 = cv.imread(og_img_file_loc) # BGR (extra image for later use)
 
     # 2) convert to HSV
-    col_conv_img = cv.cvtColor(og_img, cv.COLOR_RGB2GRAY)
-    # plt.imshow(col_conv_img)
-    # plt.show()
+    col_conv_img = cv.cvtColor(og_img, cv.COLOR_BGR2RGB)
+    plt.imshow(col_conv_img)
+    plt.show()
 
     # 3) Add blur to image
     blur_img = cv.GaussianBlur(col_conv_img, (blr_amt, blr_amt), cv.BORDER_DEFAULT)
@@ -159,5 +175,6 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
 
 if __name__ == '__main__':
-    blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD = get_settings()
+    blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD, Color_Settings = get_settings()
+    RED_L, RED_U, GREEN_L, GREEN_U, BLUE_L, BLUE_U = color_limits(Color_Settings)
     main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD)
