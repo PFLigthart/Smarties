@@ -73,11 +73,22 @@ def s_color_counter(smty_df, img):
             x_val.append(j[0][0])
             y_val.append(j[0][1])
         centroid.append([statistics.mean(x_val), statistics.mean(y_val)])
+        # this_centroid = np.array([centroid[-1]])
+        # print((this_centroid))
+        # cv.drawContours(img, this_centroid, -1, (255,255,255), 20)
+        # plt.imshow(img)
+        # plt.show()
+
+
+    print("Ammount of Smarties")
+    print(len(centroid))
 
     centroid_contours = []
     for i in centroid:
         # this specific format is requied for the drawContours function
         centroid_contours.append(np.array([i]))
+
+    # print(centroid_contours)
 
     smty_df["Centroid"] = centroid
 
@@ -88,36 +99,34 @@ def s_color_counter(smty_df, img):
     # print(s_color_val)
 
 
-    cv.drawContours(img, centroid_contours, -1, (255,250,250), 12)
+    cv.drawContours(img, centroid_contours, -1, (255,255,255), 20)
     plt.imshow(img)
     plt.show()
-
-
-
-
 
 
 def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     # 1) Load up the image file
-    og_img_file_loc = get_dir_path("Smartie_Dark_1.JPG")
+    og_img_file_loc = get_dir_path("White_1.JPG")
+    # og_img_file_loc = get_dir_path("Smarties.jpg")
+    # og_img_file_loc = get_dir_path("Smartie_Dark_2.JPG")
     og_img = cv.imread(og_img_file_loc) # BGR
     og_img1 = cv.imread(og_img_file_loc) # BGR (extra image for later use)
 
     # 2) convert to HSV
-    hsv_img = cv.cvtColor(og_img, cv.COLOR_RGB2GRAY)
-    # plt.imshow(hsv_img)
+    col_conv_img = cv.cvtColor(og_img, cv.COLOR_RGB2GRAY)
+    # plt.imshow(col_conv_img)
     # plt.show()
 
     # 3) Add blur to image
-    blur_img = cv.GaussianBlur(hsv_img, (blr_amt, blr_amt), cv.BORDER_DEFAULT)
+    blur_img = cv.GaussianBlur(col_conv_img, (blr_amt, blr_amt), cv.BORDER_DEFAULT)
     plt.imshow(blur_img, cmap='gray')
     plt.show()
 
     # 4) Find the edges using canny
     canny_img = cv.Canny(blur_img, minVal, maxVal)
-    # plt.imshow(canny_img)
-    # plt.show()
+    plt.imshow(canny_img, cmap='gray')
+    plt.show()
 
     kernel = np.ones((dilate_size, dilate_size))
 
@@ -132,9 +141,14 @@ def main(blr_amt, minVal, maxVal, dilate_size, MIN_CONT_THRESHOLD):
 
     filtd_contours, filtered_conatours_df = filter_contours(contours, MIN_CONT_THRESHOLD)
     # print(filtd_contours)
-    cv.drawContours(og_img, filtd_contours, -1, (0,0,0), 2)
-    # plt.imshow(og_img)
-    # plt.show()
+    # for i in contours:
+    #     cv.drawContours(og_img, i, -1, (200,200,200), 14)
+    #     plt.imshow(og_img)
+    #     plt.show()
+
+    cv.drawContours(og_img, contours, -1, (200,200,200), 14)
+    plt.imshow(og_img)
+    plt.show()
 
     # 7) count the number of different smartie colors:
 
